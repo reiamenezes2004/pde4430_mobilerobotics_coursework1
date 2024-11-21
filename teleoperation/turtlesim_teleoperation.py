@@ -35,8 +35,15 @@ def on_press(key):
             twist.linear.x = linear * speed
             twist.angular.z = angular * turn_speed
             pub.publish(twist)
+
+                # asks the user for speed input when 's' is pressed
+        elif key.char == 's':
+            sys.stdout.write("\r")  # clear the line where 's' was printed. resolves the alphanumeric issue
+            sys.stdout.flush()
+            prompt_for_speed()
     except AttributeError:
         pass
+    
 
 # define key release function
 def on_release(key):
@@ -64,3 +71,13 @@ def prompt_for_speed():
         print(f"Updated new turtle speed: Linear = {speed} m/s, Angular = {turn_speed} rad/s")
     except ValueError:
         print("Invalid input. Please enter numeric values only.")
+
+# main function to handle turtlesim teleoperation
+def teleop_turtle():
+    print("Control Your Turtle! Press 'f', 'b', 'l', 'r' to move the turtle.")
+    print("Press 's' to set new speed values for linear and angular speed.")
+    print("Press 'esc' to exit the program.")
+
+    # keyboard listener
+    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
