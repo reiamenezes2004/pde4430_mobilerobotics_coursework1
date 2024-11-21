@@ -5,7 +5,7 @@ from geometry_msgs.msg import Twist
 from pynput import keyboard
 import sys
 
-# turtlesim_teleoperation
+# turtlesim_teleoperation_code
 
 # initializing the variables
 speed = 1.0         # declaring linear speed (m/s)
