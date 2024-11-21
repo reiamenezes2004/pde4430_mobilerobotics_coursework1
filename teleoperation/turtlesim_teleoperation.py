@@ -38,3 +38,13 @@ def on_press(key):
     except AttributeError:
         pass
 
+# define key release function
+def on_release(key):
+    # stop the turtle once the key is released
+    twist.linear.x = 0
+    twist.angular.z = 0
+    pub.publish(twist)
+    # exit the program on ESC key
+    if key == keyboard.Key.esc:
+        return False
+
