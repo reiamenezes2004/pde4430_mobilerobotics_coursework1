@@ -24,3 +24,17 @@ rate = rospy.Rate(10)  # 10 Hz
 
 # creating a Twist message
 twist = Twist()
+
+# defining the key press functions
+def on_press(key):
+    global speed, turn_speed
+    try:
+        # check if the key is in movement bindings
+        if key.char in move_bindings:
+            linear, angular = move_bindings[key.char]
+            twist.linear.x = linear * speed
+            twist.angular.z = angular * turn_speed
+            pub.publish(twist)
+    except AttributeError:
+        pass
+
