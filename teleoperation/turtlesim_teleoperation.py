@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#teleoperation 
+#teleoperation
 
 import rospy
 from geometry_msgs.msg import Twist
