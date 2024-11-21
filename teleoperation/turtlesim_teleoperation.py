@@ -48,3 +48,19 @@ def on_release(key):
     if key == keyboard.Key.esc:
         return False
 
+# function to ask the user for speed input
+def prompt_for_speed():
+    global speed, turn_speed
+    try:
+        # ask user to enter linear speed
+        print("Enter the new turtle speeds:")
+        new_speed = float(input("Linear speed (m/s): ").strip())
+        # ask user to enter angular speed
+        new_turn_speed = float(input("Angular speed (rad/s): ").strip())
+
+        # update global speed variables
+        speed = new_speed
+        turn_speed = new_turn_speed
+        print(f"Updated new turtle speed: Linear = {speed} m/s, Angular = {turn_speed} rad/s")
+    except ValueError:
+        print("Invalid input. Please enter numeric values only.")
