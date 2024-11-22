@@ -37,7 +37,7 @@ def spawn_turtle_at_bottom_left_corner():
     try:
         spawn_turtle = rospy.ServiceProxy('/spawn', Spawn)
         spawn_turtle(minimum_window_x, minimum_window_y, 0, "turtle1")  # spawn directly at bottom-left corner (0.5, 0.5)
-        rospy.loginfo("Turtle spawned at bottom-left corner.")
+        rospy.loginfo("Turtle spawned at bottom-left corner.\n")
     except rospy.ServiceException as e:
         rospy.logerr(f"Failed to spawn turtle: {e}")
 
@@ -65,7 +65,7 @@ def move_to_target(publisher_cmd_vel, target_x, target_y):
 
         # turtle stops if it is within the tolerance distance
         if distance < threshold_distance:
-            rospy.loginfo(f"Reached target at x={target_x}, y={target_y}")
+            rospy.loginfo(f"Reached target at x={target_x}, y={target_y}\n")
             twist = Twist()
             publisher_cmd_vel.publish(twist)  # turtle stop
             break
@@ -125,7 +125,7 @@ if __name__ == '__main__':
         while current_turtle_position is None and not rospy.is_shutdown():
             rospy.sleep(0.1)
 
-        rospy.loginfo(f"Current Position: x={current_turtle_position.x:.2f}, y={current_turtle_position.y:.2f}")
+        rospy.loginfo(f"Current Position: x={current_turtle_position.x:.2f}, y={current_turtle_position.y:.2f}\n")
 
         # start wavefront-based window coverage
         window_wavefront_vacuum(publisher_cmd_vel)
