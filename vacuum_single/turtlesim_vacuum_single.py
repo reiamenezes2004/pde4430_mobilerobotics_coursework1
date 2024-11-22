@@ -31,3 +31,12 @@ def kill_default_turtle():
     except rospy.ServiceException as e:
         rospy.logwarn(f"Could not kill default turtle: {e}")
 
+#  spawns the turtle at the bottom-left corner
+def spawn_turtle_at_bottom_left_corner():
+    rospy.wait_for_service('/spawn')
+    try:
+        spawn_turtle = rospy.ServiceProxy('/spawn', Spawn)
+        spawn_turtle(minimum_window_x, minimum_window_y, 0, "turtle1")  # spawn directly at bottom-left corner (0.5, 0.5)
+        rospy.loginfo("Turtle spawned at bottom-left corner.")
+    except rospy.ServiceException as e:
+        rospy.logerr(f"Failed to spawn turtle: {e}")
