@@ -71,3 +71,39 @@ def generate_robot_area(robot_index, num_robots):
             y += grid_dimensions
         x += grid_dimensions
     return grid_points
+
+# spawn 5 robots along the bottom of the window 
+def spawn_robots_at_bottom_of_the_window():
+    spawn_points = [
+        (minimum_window_x + 0.5, minimum_window_y + 0.5),
+        (minimum_window_x + 3.0, minimum_window_y + 0.5),
+        (minimum_window_x + 5.0, minimum_window_y + 0.5),
+        (minimum_window_x + 7.0, minimum_window_y + 0.5),
+        (minimum_window_x + 9.0, minimum_window_y + 0.5),
+    ]
+    robots = []
+    rospy.wait_for_service('/spawn')
+
+    for i in range(5):  # spawing the five robots
+        robot_name = f"turtle{i+1}"
+        spawn_x, spawn_y = spawn_points[i]
+        try:
+            spawn_turtle = rospy.ServiceProxy('/spawn', Spawn)
+            spawn_turtle(spawn_x, spawn_y, 0, robot_name)
+            robots.append(robot_name)
+            rospy.loginfo(f"Spawned {robot_name} at x={spawn_x}, y={spawn_y}")
+
+            # adding a unique line color for each robot for better clarity
+            set_robot_line_colour(robot_name, turtle_line_colours[i][0], turtle_line_colours[i][1], turtle_line_colours[i][2], 3, 0)
+        except rospy.ServiceException as e:
+            rospy.logerr(f"Failed to spawn {robot_name}: {e}")
+
+    return robots
+
+def set_robot_line_colour(robot_name, r, g, b, width, off):
+    rospy.wait_for_service(f'/{robot_name}/set_pen')
+    try:
+        set_pen = rospy.ServiceProxy(f'/{robot_name}/set_pen', SetPen)
+        set_pen(r, g, b, width, off)
+    except rospy.ServiceException as e:
+        rospy.logerr(f"Failed to set pen for {robot_name}: {e}")
