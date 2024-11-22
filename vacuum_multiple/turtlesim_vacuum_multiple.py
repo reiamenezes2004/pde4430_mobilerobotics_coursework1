@@ -57,3 +57,17 @@ def move_to_target(robot_name, publisher_cmd_vel, target_x, target_y):
         publisher_cmd_vel.publish(twist)
         rate.sleep()
 
+# make grid points for each robot
+def generate_robot_area(robot_index, num_robots):
+    grid_points = []
+    x_start = minimum_window_x + (robot_index * (maximum_window_x - minimum_window_x) / num_robots)
+    x_end = x_start + (maximum_window_x - minimum_window_x) / num_robots
+
+    x = x_start
+    while x < x_end:
+        y = minimum_window_x
+        while y <= maximum_window_y:
+            grid_points.append((x, y))
+            y += grid_dimensions
+        x += grid_dimensions
+    return grid_points
