@@ -4,6 +4,27 @@ import rospy
 from geometry_msgs.msg import Twist
 from turtlesim.msg import Pose
 
+#turtlesim_wall_collision_code
+
+
+# variable to store the turtle's current position
+current_turtle_position = None
+
+# turtlesim window boundaries for wall collision detection (11x11)
+minimum_window_x = 0.5
+maximum_window_x = 10.5
+minimum_window_y = 0.5
+maximum_window_y = 10.5
+
+# threshold prior to the turtle hitting the wall (distance in meters)
+PROXIMITY_THRESHOLD = 0.5  
+
+starting_position_logged = False
+wall_detected_logged = False
+
+
+
+
 if __name__ == '__main__':
     try:
         rospy.init_node('wall_collision_detection', anonymous=True)
