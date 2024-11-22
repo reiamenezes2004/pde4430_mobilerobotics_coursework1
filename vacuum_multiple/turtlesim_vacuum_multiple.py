@@ -8,6 +8,7 @@ import math
 
 # turtlesim_vaccum_multiple_code
 
+
 # global Variables
 robot_spawning_positions = {}
 grid_dimensions = 0.5  # decided grid size for better coverage - avoids wall collision
@@ -26,6 +27,29 @@ turtle_completed = {}
 def update_position_callback(data, robot_name):
     global robot_spawning_positions
     robot_spawning_positions[robot_name] = data
+
+def move_robot_to_next_target(event, robot_name):
+    global grid_points_assignments, progress_counters, robot_spawning_positions, turtle_completed
+
+    if robot_name not in robot_spawning_positions:
+        return  
+
+    # check if the robot has completed its tasks
+    if turtle_completed[robot_name]:
+        return
+
+    counter = progress_counters[robot_name]
+    if counter >= len(grid_points_assignments[robot_name]):
+        rospy.loginfo(f"{robot_name} has finished its vacuuming. Moving the turtle to the center.")
+        move_to_target(robot_name, publishers[robot_name], 5.5, 5.5)  # once completed move to center
+        rospy.loginfo(f"{robot_name} is now at the center.")
+        turtle_completed[robot_name] = True  # marks robot as completed vacuuming
+        return
+
+    target_x, target_y = grid_points_assignments[robot_name][counter]
+    progress_counters[robot_name] += 1
+    rospy.loginfo(f"{robot_name} moving to grid point x={target_x}, y={target_y}")
+    move_to_target(robot_name, publishers[robot_name], target_x, target_y)
 
 # move the robot to a target position
 def move_to_target(robot_name, publisher_cmd_vel, target_x, target_y):
@@ -107,3 +131,48 @@ def set_robot_line_colour(robot_name, r, g, b, width, off):
         set_pen(r, g, b, width, off)
     except rospy.ServiceException as e:
         rospy.logerr(f"Failed to set pen for {robot_name}: {e}")
+
+# check if all turtles have completed their designated vacuuming areas
+def all_robots_finished_vacuuming():
+    for robot_name in turtle_completed:
+        if not turtle_completed[robot_name]:
+            return False
+    return True
+
+if __name__ == '__main__':
+    try:
+        rospy.init_node('multi_robot_wavefront_vacuum', anonymous=True)
+
+        # kill the default turtle - center
+        rospy.wait_for_service('/kill')
+        try:
+            kill_turtle = rospy.ServiceProxy('/kill', Kill)
+            kill_turtle("turtle1")
+        except rospy.ServiceException:
+            rospy.logwarn("Default turtle already killed.")
+
+        # spawn robots along the bottom of the window
+        robots = spawn_robots_at_bottom_of_the_window()
+
+        # initialize publishers, subscribers, and grid assignments
+        for i in range(5):  # five robots
+            robot_name = f"turtle{i+1}"
+            publishers[robot_name] = rospy.Publisher(f'/{robot_name}/cmd_vel', Twist, queue_size=10)
+            rospy.Subscriber(f'/{robot_name}/pose', Pose, update_position_callback, robot_name)
+            grid_points_assignments[robot_name] = generate_robot_area(i, 5)
+            progress_counters[robot_name] = 0  # initialize counter for tracking
+            turtle_completed[robot_name] = False  # initialize completion flags for the robots
+
+            # timers for simultaneous vacuuming of the turtles
+            rospy.Timer(rospy.Duration(0.1), lambda event, name=robot_name: move_robot_to_next_target(event, name))
+
+        # checking again if all robots have finished
+        rate = rospy.Rate(1)
+        while not rospy.is_shutdown():
+            if all_robots_finished_vacuuming():
+                rospy.loginfo("All robots have finished vacuuming and reached the center. Multiple robot vacuuming is now complete.")
+                break
+            rate.sleep()
+
+    except rospy.ROSInterruptException:
+        pass
