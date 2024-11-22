@@ -77,7 +77,9 @@ if __name__ == '__main__':
         publisher_cmd_vel = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
 
         # subscriber subscribes to /turtle1/pose topic
-        rospy.Subscriber('/turtle1/pose', Pose, lambda x: None)
+        rospy.Subscriber('/turtle1/pose', Pose, update_position_callback)
+
+        detect_wall_collision(publisher_cmd_vel)
 
     except rospy.ROSInterruptException:
         pass
