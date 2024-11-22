@@ -82,3 +82,27 @@ def move_to_target(publisher_cmd_vel, target_x, target_y):
         publisher_cmd_vel.publish(twist)
         rate.sleep()
 
+# generate grid points for vacuuming the window using the wavefront coverage method
+def create_grid_points():
+    grid_points = []
+    x = minimum_window_x
+    while x <= maximum_window_x:
+        y = minimum_window_y
+        while y <= maximum_window_y:
+            grid_points.append((x, y))
+            y += grid_dimensions
+        x += grid_dimensions
+    return grid_points
+
+# method for wavefront coverage
+def window_wavefront_vacuum(publisher_cmd_vel):
+    global current_turtle_position
+
+    grid_points = create_grid_points()
+
+    for target_x, target_y in grid_points:
+        rospy.loginfo(f"Moving to grid point x={target_x}, y={target_y}")
+        move_to_target(publisher_cmd_vel, target_x, target_y)
+
+    rospy.loginfo("Window Vacuuming complete!")
+
