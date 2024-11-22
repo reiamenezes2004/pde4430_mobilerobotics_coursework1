@@ -9,6 +9,7 @@ import math
 # turtlesim_vaccum_multiple_code
 
 
+
 # global Variables
 robot_spawning_positions = {}
 grid_dimensions = 0.5  # decided grid size for better coverage - avoids wall collision
@@ -170,6 +171,7 @@ if __name__ == '__main__':
         rate = rospy.Rate(1)
         while not rospy.is_shutdown():
             if all_robots_finished_vacuuming():
+                rospy.loginfo("\n")
                 rospy.loginfo("All robots have finished vacuuming and reached the center. Multiple robot vacuuming is now complete.")
                 break
             rate.sleep()
