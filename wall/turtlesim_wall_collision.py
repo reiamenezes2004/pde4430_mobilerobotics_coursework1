@@ -22,6 +22,10 @@ PROXIMITY_THRESHOLD = 0.5
 starting_position_logged = False
 wall_detected_logged = False
 
+# callback function to update the turtle's current position
+def update_position_callback(data):
+    global current_turtle_position
+    current_turtle_position = data
 
 
 
