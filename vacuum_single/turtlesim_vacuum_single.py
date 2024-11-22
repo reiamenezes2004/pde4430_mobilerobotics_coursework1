@@ -106,3 +106,29 @@ def window_wavefront_vacuum(publisher_cmd_vel):
 
     rospy.loginfo("Window Vacuuming complete!")
 
+
+if __name__ == '__main__':
+    try:
+        rospy.init_node('window_wavefront_vacuum', anonymous=True)
+
+        # kills the default turtle - done to avoid renames 
+        kill_default_turtle()
+
+        spawn_turtle_at_bottom_left_corner()
+
+        # publisher to send velocity commands
+        publisher_cmd_vel = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
+
+        # subscriber to /turtle1/pose topic
+        rospy.Subscriber('/turtle1/pose', Pose, update_position_callback)
+
+        while current_turtle_position is None and not rospy.is_shutdown():
+            rospy.sleep(0.1)
+
+        rospy.loginfo(f"Current Position: x={current_turtle_position.x:.2f}, y={current_turtle_position.y:.2f}")
+
+        # start wavefront-based window coverage
+        window_wavefront_vacuum(publisher_cmd_vel)
+
+    except rospy.ROSInterruptException:
+        pass
