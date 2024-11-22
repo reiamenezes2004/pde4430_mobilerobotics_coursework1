@@ -22,3 +22,12 @@ maximum_window_y = 10.5
 def update_position_callback(data):
     global current_turtle_position
     current_turtle_position = data
+
+def kill_default_turtle():
+    rospy.wait_for_service('/kill')
+    try:
+        kill_turtle = rospy.ServiceProxy('/kill', Kill)
+        kill_turtle("turtle1")
+    except rospy.ServiceException as e:
+        rospy.logwarn(f"Could not kill default turtle: {e}")
+
