@@ -27,6 +27,10 @@ def update_position_callback(data):
     global current_turtle_position
     current_turtle_position = data
 
+# checking for wall proximity
+def turtle_near_wall(x, y):
+    return x <= minimum_window_x + PROXIMITY_THRESHOLD or x >= maximum_window_x - PROXIMITY_THRESHOLD or \
+           y <= minimum_window_y + PROXIMITY_THRESHOLD or y >= maximum_window_y - PROXIMITY_THRESHOLD
 
 
 if __name__ == '__main__':
