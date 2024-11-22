@@ -32,6 +32,42 @@ def turtle_near_wall(x, y):
     return x <= minimum_window_x + PROXIMITY_THRESHOLD or x >= maximum_window_x - PROXIMITY_THRESHOLD or \
            y <= minimum_window_y + PROXIMITY_THRESHOLD or y >= maximum_window_y - PROXIMITY_THRESHOLD
 
+def detect_wall_collision(publisher_cmd_vel):
+    global current_turtle_position, starting_position_logged, wall_detected_logged
+
+    rate = rospy.Rate(10)  # 10 Hz
+
+    while not rospy.is_shutdown():
+        if current_turtle_position is None:
+            rospy.sleep(0.1)
+            continue
+
+        # get the turtle's current position
+        x = current_turtle_position.x
+        y = current_turtle_position.y
+
+        # log the starting position of the turtle
+        if not starting_position_logged:
+            rospy.loginfo(f"The starting position of the turtle is x={x:.2f}, y={y:.2f}")
+            starting_position_logged = True
+
+        twist = Twist()
+
+        if turtle_near_wall(x, y):
+            if not wall_detected_logged:
+                rospy.logwarn("A wall has been detected! Stopping turtle movement.")
+                rospy.loginfo(f"Current Position: x={x:.2f}, y={y:.2f}")
+                wall_detected_logged = True
+            twist.linear.x = 0.0  # stops the turtle's movement
+            twist.angular.z = 0.0 # stops the turtle from rotating
+        else:
+            rospy.loginfo("The turtle is moving forward")
+            twist.linear.x = 1.0  
+            twist.angular.z = 0.0
+
+        publisher_cmd_vel.publish(twist)
+        rate.sleep()
+
 
 if __name__ == '__main__':
     try:
